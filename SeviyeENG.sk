@@ -1,0 +1,34 @@
+options:
+	botToken: "Bot Token"
+	bot: "Bot Name"
+	MesajBasinaXPDegeri: 13 #exp value per message
+	MesajSureAraliklari: 3 #Anti-spam (second)
+	prefix: c!, C! #
+
+on load:
+    if {@bot} parsed as bot is not set:
+        login to {@botToken} with name {@bot}
+    set status of {@bot} to online
+
+on unload:
+    set status of {@bot} to do not disturb
+
+on message received seen by {@bot}:
+	if event-string isn't {dcmesaj::%id of event-member%::sonmesaj} or {dcmesaj::%id of event-member%::sonmesaj2}:
+		if {dcmesaj::%id of event-member%::sonmesaj3} isn't true:
+			set {dcmesaj::%id of event-member%::sonmesaj3} to true
+			set {dcmesaj::%id of event-member%::sonmesaj2} to {dcmesaj::%id of event-member%::sonmesaj}
+			set {dcmesaj::%id of event-member%::sonmesaj} to event-string
+			add 1 to {dcmesaj::%id of event-member%::mesajsayisi}
+			wait {@MesajSureAraliklari} seconds
+			set {dcmesaj::%id of event-member%::sonmesaj3} to false
+			
+	
+discord command seviye:
+  aliases: level
+	executable in: guild
+	prefixes: {@prefix}
+	trigger:
+		reply with "You have %{dcmesaj::%id of event-member%::mesajsayisi}% message(s)"
+		set {dcmesaj::%id of event-member%::xp} to {dcmesaj::%id of event-member%::mesajsayisi} * {@MesajBasinaXPDegeri}
+		reply with "You have %{dcmesaj::%id of event-member%::xp}% XP(s)"
